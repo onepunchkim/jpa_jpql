@@ -19,24 +19,37 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member();
+                member.setUsername("member" + i);
+                member.setAge(i);
+                em.persist(member);
+            }
 
             em.flush();
             em.clear();
 
             //영속성 컨텍스트에서 관리된다.
-            //List<Member> result = em.createQuery("select m from Member m", Member.class).getResultList();
+            /*List<Member> result = em.createQuery("select m from Member m", Member.class).getResultList(); */
 
             //DTO클래스와 생성자를 통해서 생성
-            List<MemberDTO> result = em.createQuery("select new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+            /*List<MemberDTO> result = em.createQuery("select new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
                     .getResultList();
 
             MemberDTO memberDTO = result.get(0);
             System.out.println("username = " + memberDTO.getUsername());
-            System.out.println("age = " + memberDTO.getAge());
+            System.out.println("age = " + memberDTO.getAge()); */
+
+            //Paging query
+            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
+                    .setFirstResult(1)
+                    .setMaxResults(10)
+                    .getResultList();
+
+            System.out.println("result.size = " + result.size());
+            for (Member member1 : result) {
+                System.out.println("member1 = " + member1);
+            }
 
             tx.commit();
         } catch (Exception e) {
