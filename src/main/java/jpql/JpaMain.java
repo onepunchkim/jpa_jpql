@@ -26,6 +26,7 @@ public class JpaMain {
             Member member = new Member();
             member.setUsername("member1");
             member.setAge(10);
+            member.setType(MemberType.ADMIN);
             member.setTeam(team);
             em.persist(member);
 
@@ -47,7 +48,7 @@ public class JpaMain {
             //Paging query
             //String query = "select m from Member m join m.team t"; //inner join
             //String query = "select m from Member m left join m.team t"; //left outer join
-            String query = "select m from Member m, Team t where m.username = t.name"; //세타 조인
+/*            String query = "select m from Member m, Team t where m.username = t.name"; //세타 조인
 
             List<Member> result = em.createQuery(query, Member.class)
                     //.setFirstResult(1) //페이징
@@ -57,6 +58,19 @@ public class JpaMain {
             System.out.println("result.size = " + result.size());
             for (Member member1 : result) {
                 System.out.println("member1 = " + member1);
+            }*/
+
+            String query = "select m.username, 'HELLO', true From Member m " +
+                            "where m.type = :userType";
+
+            List<Object[]> result = em.createQuery(query)
+                    .setParameter("userType", MemberType.ADMIN)
+                    .getResultList();
+
+            for (Object[] objects : result) {
+                System.out.println("objects = " + objects[0]);
+                System.out.println("objects = " + objects[1]);
+                System.out.println("objects = " + objects[2]);
             }
 
             tx.commit();
