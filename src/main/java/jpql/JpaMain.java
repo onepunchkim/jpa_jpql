@@ -76,9 +76,11 @@ public class JpaMain {
             }*/
 
             //CASE
-            String query = "select nullif(m.username, '관리자') from Member m";
-            List<String> result = em.createQuery(query,String.class).getResultList();
-            for (String s : result) {
+            //String query = "select nullif(m.username, '관리자') from Member m";
+
+            String query = "select size(t.members) from Team t";
+            List<Integer> result = em.createQuery(query, Integer.class).getResultList();
+            for (Integer s : result) {
                 System.out.println("s = " + s);
             }
 
