@@ -24,12 +24,15 @@ public class JpaMain {
             em.persist(team);
 
             Member member = new Member();
-            member.setUsername("관리자");
+            member.setUsername("관리자1");
             member.setAge(10);
             member.setType(MemberType.ADMIN);
             member.setTeam(team);
             em.persist(member);
 
+            Member member2 = new Member();
+            member2.setUsername("관리자2");
+            em.persist(member2);
 
             em.flush();
             em.clear();
@@ -78,9 +81,9 @@ public class JpaMain {
             //CASE
             //String query = "select nullif(m.username, '관리자') from Member m";
 
-            String query = "select size(t.members) from Team t";
-            List<Integer> result = em.createQuery(query, Integer.class).getResultList();
-            for (Integer s : result) {
+            String query = "select function('group_concat', m.username) from Member m";
+            List<String> result = em.createQuery(query, String.class).getResultList();
+            for (String s : result) {
                 System.out.println("s = " + s);
             }
 
