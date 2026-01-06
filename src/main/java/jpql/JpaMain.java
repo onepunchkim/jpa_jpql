@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 
+import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -81,11 +82,17 @@ public class JpaMain {
             //CASE
             //String query = "select nullif(m.username, '관리자') from Member m";
 
-            String query = "select function('group_concat', m.username) from Member m";
-            List<String> result = em.createQuery(query, String.class).getResultList();
-            for (String s : result) {
-                System.out.println("s = " + s);
-            }
+            //String query = "select function('group_concat', m.username) from Member m";
+
+            //String query = "select m.team from Member m"; //묵시적 내부 조인 발생 (발생하지 않도록 조심)
+
+            //컬렉션 값 묵시적 내부 조인 발생 (탐색이 어렵다)
+            //명시적으로 from 절에서 별칭으로 사용
+            String query = "select m.username from Team t join t.members m";
+
+            List<Collection> result = em.createQuery(query, Collection.class).getResultList();
+
+            System.out.println("result = " + result);
 
             tx.commit();
         } catch (Exception e) {
