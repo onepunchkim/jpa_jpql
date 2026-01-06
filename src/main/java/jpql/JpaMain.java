@@ -20,20 +20,30 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Team teamA = new Team();
+            teamA.setName("팀A");
+            em.persist(teamA);
 
-            Member member = new Member();
-            member.setUsername("관리자1");
-            member.setAge(10);
-            member.setType(MemberType.ADMIN);
-            member.setTeam(team);
-            em.persist(member);
+            Team teamB = new Team();
+            teamB.setName("팀B");
+            em.persist(teamB);
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setAge(10);
+            //member1.setType(MemberType.ADMIN);
+            member1.setTeam(teamA);
+            em.persist(member1);
 
             Member member2 = new Member();
-            member2.setUsername("관리자2");
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
             em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
 
             em.flush();
             em.clear();
@@ -88,11 +98,31 @@ public class JpaMain {
 
             //컬렉션 값 묵시적 내부 조인 발생 (탐색이 어렵다)
             //명시적으로 from 절에서 별칭으로 사용
-            String query = "select m.username from Team t join t.members m";
+            //String query = "select m.username from Team t join t.members m";
 
-            List<Collection> result = em.createQuery(query, Collection.class).getResultList();
+/*            String query = "select m from Member m join fetch m.team";
 
-            System.out.println("result = " + result);
+            List<Member> result = em.createQuery(query, Member.class).getResultList();
+
+            for (Member member : result) {
+                System.out.println("member = " + member.getUsername() + ", " + member.getTeam().getName());
+                //회원1, 팀A(SQL)
+                //회원2, 팀A(1차 캐시)
+                //회원3, 팀B(SQL)
+                //회원 100명 -> N+1
+            }*/
+
+            String query = "select t from Team t join fetch t.members";
+
+            List<Team> result = em.createQuery(query, Team.class).getResultList();
+
+            for (Team team : result) {
+                System.out.println("team = " + team.getName() + "|members = " + team.getMembers().size());
+                //일대다 조인은 데이터가 뻥튀기 된다.
+                for (Member member : team.getMembers()) {
+                    System.out.println("-> member = " + member);
+                }
+            }
 
             tx.commit();
         } catch (Exception e) {
