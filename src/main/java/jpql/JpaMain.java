@@ -112,9 +112,15 @@ public class JpaMain {
                 //회원 100명 -> N+1
             }*/
 
-            String query = "select t from Team t join fetch t.members";
+            //String query = "select distinct t from Team t join fetch t.members m";
+            String query = "select t from Team t";
 
-            List<Team> result = em.createQuery(query, Team.class).getResultList();
+            List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
+                    .getResultList();
+
+            System.out.println("result = " + result.size());
 
             for (Team team : result) {
                 System.out.println("team = " + team.getName() + "|members = " + team.getMembers().size());
