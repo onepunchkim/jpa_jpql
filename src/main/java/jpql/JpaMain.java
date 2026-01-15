@@ -1,9 +1,6 @@
 package jpql;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
+import jakarta.persistence.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -113,7 +110,7 @@ public class JpaMain {
             }*/
 
             //String query = "select distinct t from Team t join fetch t.members m";
-            String query = "select t from Team t";
+/*            String query = "select t from Team t";
 
             List<Team> result = em.createQuery(query, Team.class)
                     .setFirstResult(0)
@@ -128,6 +125,26 @@ public class JpaMain {
                 for (Member member : team.getMembers()) {
                     System.out.println("-> member = " + member);
                 }
+            }*/
+
+            //엔티티를 직접 사용 (기본키값)
+/*            String query = "select m from Member m where m = :member";
+
+            Member findMember = em.createQuery(query, Member.class)
+                    .setParameter("member", member1)
+                    .getSingleResult();
+
+            System.out.println("findMember = " + findMember);*/
+
+            //엔티티를 직접 사용 (외래키값)
+            String query = "select m from Member m where m.team = :team";
+
+            List<Member> members = em.createQuery(query, Member.class)
+                    .setParameter("team", teamA)
+                    .getResultList();
+
+            for (Member member : members) {
+                System.out.println("member = " + member);
             }
 
             tx.commit();
